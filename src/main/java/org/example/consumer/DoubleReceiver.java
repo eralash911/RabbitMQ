@@ -1,12 +1,12 @@
 package org.example.consumer;
 
-
 import com.rabbitmq.client.*;
+
 import java.nio.charset.StandardCharsets;
 
+public class DoubleReceiver {
 
-public class ExchangeReceiver{
-    private final static String EXC_NAME = "DirectExchanger";
+    private final static String EXC_NAME = "Double";
 
     public static void main(String[] args) throws Exception {
         ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -20,18 +20,16 @@ public class ExchangeReceiver{
         System.out.println("My name is" + queueName);
 
         channel.queueBind(queueName, EXC_NAME, "php");
+        channel.queueBind(queueName, EXC_NAME, "java");
 
-        System.out.println("[*] Waiting for msg  " + queueName);
+        System.out.println("Waiting msg");
 
 
         DeliverCallback callback = (consumerTag, delivery) ->{
             String  msg = new String(delivery.getBody(), StandardCharsets.UTF_8);
             System.out.println(Thread.currentThread().getName() + "[X] Received " + msg + ".....");
+            System.out.println(Thread.currentThread().getName());
         };
-        channel.basicConsume(queueName, true, callback, consumerTag ->{
-
-        });
-
-
+        channel.basicConsume(queueName, true, callback, consumerTag ->{});
     }
 }
